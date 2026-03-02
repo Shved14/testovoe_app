@@ -45,7 +45,7 @@ type PlanId = (typeof PLANS)[number]['id'];
 
 export default function PaywallScreen() {
   const { width } = useWindowDimensions();
-  const isCompact = width < 360;
+  const isCompact = width <= 360;
   const [selectedPlan, setSelectedPlan] = useState<PlanId>('monthly');
   const router = useRouter();
   const { subscribe } = useSubscription();
