@@ -13,22 +13,15 @@ export default function MeditationsScreen() {
 
   const renderItem: ListRenderItem<MeditationSession> = useCallback(
     ({ item, index }) => {
-      const hasNoSubscription = !isSubscribed;
-      const hasBasic = plan === 'basic';
-      const hasPremium = plan === 'premium';
-
       let isLocked = false;
       let showUpgradeCta = false;
 
-      if (hasNoSubscription) {
-        // Без подписки блокируем все, но визуально можно оставить только первую тройку как замануху
+      if (!isSubscribed) {
+        // Без подписки: все 6 сессий заблокированы и ведут к экрану подписки
         isLocked = true;
-        showUpgradeCta = false;
-      } else if (hasBasic) {
-        // Базовая подписка: первые 3 сессии доступны, остальные требуют премиум
-        isLocked = index >= 3;
-        showUpgradeCta = index >= 3;
-      } else if (hasPremium) {
+        showUpgradeCta = true;
+      } else {
+        // С любой активной подпиской (monthly или yearly) все сессии доступны
         isLocked = false;
         showUpgradeCta = false;
       }

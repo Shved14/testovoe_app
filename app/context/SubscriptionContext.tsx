@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 
-export type SubscriptionPlan = 'none' | 'basic' | 'premium';
+export type SubscriptionPlan = 'none' | 'monthly' | 'yearly';
 
 type SubscriptionContextValue = {
   isSubscribed: boolean;

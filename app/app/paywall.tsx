@@ -21,8 +21,7 @@ export default function PaywallScreen() {
   const { subscribe } = useSubscription();
 
   const handleStartTrial = () => {
-    const mappedPlan = selectedPlan === 'monthly' ? 'basic' : 'premium';
-    subscribe(mappedPlan);
+    subscribe(selectedPlan);
     router.replace('/meditations');
   };
 
