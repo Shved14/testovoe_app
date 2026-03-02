@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  useWindowDimensions,
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -13,16 +22,47 @@ const BENEFITS = [
   'Gentle reminders to pause and breathe',
 ];
 
+const PLANS = [
+  {
+    id: 'monthly' as const,
+    label: 'Monthly',
+    price: '$9.99',
+    caption: 'Billed monthly, cancel anytime.',
+    highlight: false,
+  },
+  {
+    id: 'yearly' as const,
+    label: 'Yearly',
+    price: '$59.99',
+    caption: 'Best for committed calm. Save more than 50%.',
+    highlight: true,
+    badge: 'Best Value',
+  },
+] as const;
+
+type PlanId = (typeof PLANS)[number]['id'];
+
 export default function PaywallScreen() {
   const { width } = useWindowDimensions();
   const isCompact = width < 360;
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+  const [selectedPlan, setSelectedPlan] = useState<PlanId>('monthly');
   const router = useRouter();
   const { subscribe } = useSubscription();
 
   const handleStartTrial = () => {
     subscribe(selectedPlan);
     router.replace('/meditations');
+  };
+
+  const cardWidth = width * 0.85;
+  const cardGap = 16;
+  const snapInterval = cardWidth + cardGap;
+
+  const handleMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const rawIndex = Math.round(offsetX / snapInterval);
+    const index = Math.min(Math.max(rawIndex, 0), PLANS.length - 1);
+    setSelectedPlan(PLANS[index].id);
   };
 
   return (
@@ -32,10 +72,7 @@ export default function PaywallScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.gradient}>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]}
-          showsVerticalScrollIndicator={false}>
+        <View style={[styles.content, isCompact && styles.contentCompact]}>
           <View style={styles.header}>
             <Text style={styles.badge}>Premium</Text>
             <Text style={styles.title}>Unlock Your Inner Calm</Text>
@@ -57,32 +94,42 @@ export default function PaywallScreen() {
           </View>
 
           <View style={styles.plansWrapper}>
-            <Pressable
-              onPress={() => setSelectedPlan('monthly')}
-              style={[
-                styles.planCard,
-                styles.planCardSecondary,
-                selectedPlan === 'monthly' && styles.planCardSelected,
-              ]}>
-              <Text style={styles.planLabel}>Monthly</Text>
-              <Text style={styles.planPrice}>$9.99</Text>
-              <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setSelectedPlan('yearly')}
-              style={[
-                styles.planCard,
-                styles.planCardPrimary,
-                selectedPlan === 'yearly' && styles.planCardSelected,
-              ]}>
-              <View style={styles.ribbon}>
-                <Text style={styles.ribbonText}>Best Value</Text>
-              </View>
-              <Text style={styles.planLabel}>Yearly</Text>
-              <Text style={styles.planPrice}>$59.99</Text>
-              <Text style={styles.planCaption}>Best for committed calm. Save more than 50%.</Text>
-            </Pressable>
+            <FlatList
+              data={PLANS}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={snapInterval}
+              decelerationRate="fast"
+              snapToAlignment="start"
+              onMomentumScrollEnd={handleMomentumEnd}
+              contentContainerStyle={{ paddingHorizontal: (width - cardWidth) / 2 }}
+              renderItem={({ item, index }) => {
+                const isSelected = selectedPlan === item.id;
+                return (
+                  <Pressable
+                    onPress={() => setSelectedPlan(item.id)}
+                    style={[
+                      styles.planCard,
+                      item.highlight ? styles.planCardPrimary : styles.planCardSecondary,
+                      isSelected && styles.planCardSelected,
+                      {
+                        width: cardWidth,
+                        marginRight: index === PLANS.length - 1 ? 0 : cardGap,
+                      },
+                    ]}>
+                    {item.highlight && item.badge && (
+                      <View style={styles.ribbon}>
+                        <Text style={styles.ribbonText}>{item.badge}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.planLabel}>{item.label}</Text>
+                    <Text style={styles.planPrice}>{item.price}</Text>
+                    <Text style={styles.planCaption}>{item.caption}</Text>
+                  </Pressable>
+                );
+              }}
+            />
           </View>
 
           <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
@@ -94,7 +141,7 @@ export default function PaywallScreen() {
           <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
             <Text style={styles.skipLinkText}>Continue without subscription</Text>
           </Pressable>
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -107,19 +154,19 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  scroll: {
+  content: {
     flex: 1,
-  },
-  scrollContent: {
     paddingHorizontal: 22,
     paddingTop: 18,
-    paddingBottom: 32,
-    gap: 22,
-  },
-  scrollContentCompact: {
-    paddingHorizontal: 18,
-    paddingTop: 12,
     paddingBottom: 24,
+    gap: 18,
+    justifyContent: 'space-between',
+  },
+  contentCompact: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 18,
+    gap: 14,
   },
   header: {
     gap: 8,
