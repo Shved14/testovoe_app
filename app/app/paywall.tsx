@@ -90,6 +90,10 @@ export default function PaywallScreen() {
           <Text style={styles.legal}>
             After the trial, your subscription renews automatically. Cancel anytime in your account settings.
           </Text>
+
+          <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
+            <Text style={styles.skipLinkText}>Continue without subscription</Text>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -266,6 +270,15 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#7E86B2',
     textAlign: 'center',
+  },
+  skipLink: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  skipLinkText: {
+    fontSize: 13,
+    color: '#C4B5FD',
+    textDecorationLine: 'underline',
   },
 });
 
