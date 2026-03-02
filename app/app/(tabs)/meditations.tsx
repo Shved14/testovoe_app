@@ -9,11 +9,29 @@ import { AIMoodSection } from '@/components/AIMoodSection';
 
 export default function MeditationsScreen() {
   const router = useRouter();
-  const { isSubscribed } = useSubscription();
+  const { isSubscribed, plan } = useSubscription();
 
   const renderItem: ListRenderItem<MeditationSession> = useCallback(
     ({ item, index }) => {
-      const isLocked = !isSubscribed && index < 3;
+      const hasNoSubscription = !isSubscribed;
+      const hasBasic = plan === 'basic';
+      const hasPremium = plan === 'premium';
+
+      let isLocked = false;
+      let showUpgradeCta = false;
+
+      if (hasNoSubscription) {
+        // Без подписки блокируем все, но визуально можно оставить только первую тройку как замануху
+        isLocked = true;
+        showUpgradeCta = false;
+      } else if (hasBasic) {
+        // Базовая подписка: первые 3 сессии доступны, остальные требуют премиум
+        isLocked = index >= 3;
+        showUpgradeCta = index >= 3;
+      } else if (hasPremium) {
+        isLocked = false;
+        showUpgradeCta = false;
+      }
 
       const handlePress = () => {
         if (isLocked) {
@@ -30,11 +48,12 @@ export default function MeditationsScreen() {
           duration={item.duration}
           image={item.image}
           locked={isLocked}
+          showUpgradeCta={showUpgradeCta}
           onPress={handlePress}
         />
       );
     },
-    [isSubscribed, router],
+    [isSubscribed, plan, router],
   );
 
   return (

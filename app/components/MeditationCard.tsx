@@ -6,10 +6,11 @@ type Props = {
   duration: string;
   image: string;
   locked?: boolean;
+  showUpgradeCta?: boolean;
   onPress: () => void;
 };
 
-export function MeditationCard({ title, duration, image, locked, onPress }: Props) {
+export function MeditationCard({ title, duration, image, locked, showUpgradeCta, onPress }: Props) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
       <View style={[styles.imageWrapper, locked && styles.lockedImageWrapper]}>
@@ -17,7 +18,7 @@ export function MeditationCard({ title, duration, image, locked, onPress }: Prop
         {locked && (
           <View style={styles.lockOverlay}>
             <Text style={styles.lockIcon}>🔒</Text>
-            <Text style={styles.lockText}>Premium</Text>
+            <Text style={styles.lockText}>{showUpgradeCta ? 'Get Premium' : 'Premium'}</Text>
           </View>
         )}
       </View>

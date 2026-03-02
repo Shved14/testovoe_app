@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 
+export type SubscriptionPlan = 'none' | 'basic' | 'premium';
+
 type SubscriptionContextValue = {
   isSubscribed: boolean;
-  subscribe: () => void;
+  plan: SubscriptionPlan;
+  subscribe: (plan: Exclude<SubscriptionPlan, 'none'>) => void;
 };
 
 const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(undefined);
@@ -12,18 +15,19 @@ type SubscriptionProviderProps = {
 };
 
 export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [plan, setPlan] = useState<SubscriptionPlan>('none');
 
-  const subscribe = () => {
-    setIsSubscribed(true);
+  const subscribe = (nextPlan: Exclude<SubscriptionPlan, 'none'>) => {
+    setPlan(nextPlan);
   };
 
   const value = useMemo(
     () => ({
-      isSubscribed,
+      isSubscribed: plan !== 'none',
+      plan,
       subscribe,
     }),
-    [isSubscribed],
+    [plan],
   );
 
   return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;

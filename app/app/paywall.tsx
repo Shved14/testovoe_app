@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSubscription } from '@/context/SubscriptionContext';
-import { PlanCard } from '@/components/PlanCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
 
 const BENEFITS = [
@@ -22,7 +21,8 @@ export default function PaywallScreen() {
   const { subscribe } = useSubscription();
 
   const handleStartTrial = () => {
-    subscribe();
+    const mappedPlan = selectedPlan === 'monthly' ? 'basic' : 'premium';
+    subscribe(mappedPlan);
     router.replace('/meditations');
   };
 
@@ -58,23 +58,32 @@ export default function PaywallScreen() {
           </View>
 
           <View style={styles.plansWrapper}>
-            <PlanCard
-              label="Monthly"
-              price="$9.99"
-              caption="Billed monthly, cancel anytime."
-              selected={selectedPlan === 'monthly'}
+            <Pressable
               onPress={() => setSelectedPlan('monthly')}
-            />
-            <View style={styles.planSpacing} />
-            <PlanCard
-              label="Yearly"
-              price="$59.99"
-              caption="Best for committed calm. Save more than 50%."
-              highlight
-              badgeText="Best Value"
-              selected={selectedPlan === 'yearly'}
+              style={[
+                styles.planCard,
+                styles.planCardSecondary,
+                selectedPlan === 'monthly' && styles.planCardSelected,
+              ]}>
+              <Text style={styles.planLabel}>Monthly</Text>
+              <Text style={styles.planPrice}>$9.99</Text>
+              <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
+            </Pressable>
+
+            <Pressable
               onPress={() => setSelectedPlan('yearly')}
-            />
+              style={[
+                styles.planCard,
+                styles.planCardPrimary,
+                selectedPlan === 'yearly' && styles.planCardSelected,
+              ]}>
+              <View style={styles.ribbon}>
+                <Text style={styles.ribbonText}>Best Value</Text>
+              </View>
+              <Text style={styles.planLabel}>Yearly</Text>
+              <Text style={styles.planPrice}>$59.99</Text>
+              <Text style={styles.planCaption}>Best for committed calm. Save more than 50%.</Text>
+            </Pressable>
           </View>
 
           <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
@@ -183,9 +192,49 @@ const styles = StyleSheet.create({
   plansWrapper: {
     marginTop: 8,
     marginBottom: 18,
+    gap: 12,
   },
-  planSpacing: {
-    height: 12,
+  planCard: {
+    borderRadius: 22,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    backgroundColor: 'rgba(9, 14, 34, 0.97)',
+    borderWidth: 1,
+    borderColor: 'rgba(129, 140, 248, 0.6)',
+    overflow: 'hidden',
+  },
+  planCardSecondary: {
+    opacity: 0.95,
+  },
+  planCardPrimary: {
+    backgroundColor: 'rgba(57, 51, 134, 0.98)',
+    borderColor: '#C4B5FD',
+    shadowColor: '#4C46B9',
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 16 },
+  },
+  planCardSelected: {
+    borderColor: '#FACC6B',
+    borderWidth: 2,
+    shadowColor: '#FACC6B',
+  },
+  planLabel: {
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: '#C3C8FF',
+    marginBottom: 6,
+  },
+  planPrice: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  planCaption: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#CBD0FF',
   },
   planCardSecondary: {
     opacity: 0.9,
