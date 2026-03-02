@@ -57,29 +57,24 @@ export default function PaywallScreen() {
             ))}
           </View>
 
-          <View style={[styles.plansWrapper, !isCompact && styles.plansWrapperRow]}>
-            <View style={!isCompact && styles.planRow}>
-              <View style={!isCompact && styles.planCardSmall}>
-                <PlanCard
-                  label="Monthly"
-                  price="$9.99"
-                  caption="Billed monthly, cancel anytime."
-                  selected={selectedPlan === 'monthly'}
-                  onPress={() => setSelectedPlan('monthly')}
-                />
-              </View>
-              <View style={!isCompact && styles.planCardLarge}>
-                <PlanCard
-                  label="Yearly"
-                  price="$59.99"
-                  caption="Best for committed calm. Save more than 50%."
-                  highlight
-                  badgeText="Best Value"
-                  selected={selectedPlan === 'yearly'}
-                  onPress={() => setSelectedPlan('yearly')}
-                />
-              </View>
-            </View>
+          <View style={styles.plansWrapper}>
+            <PlanCard
+              label="Monthly"
+              price="$9.99"
+              caption="Billed monthly, cancel anytime."
+              selected={selectedPlan === 'monthly'}
+              onPress={() => setSelectedPlan('monthly')}
+            />
+            <View style={styles.planSpacing} />
+            <PlanCard
+              label="Yearly"
+              price="$59.99"
+              caption="Best for committed calm. Save more than 50%."
+              highlight
+              badgeText="Best Value"
+              selected={selectedPlan === 'yearly'}
+              onPress={() => setSelectedPlan('yearly')}
+            />
           </View>
 
           <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
@@ -186,25 +181,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   plansWrapper: {
-    flexDirection: 'column',
-    gap: 14,
     marginTop: 8,
     marginBottom: 18,
   },
-  plansWrapperRow: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-  planRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    columnGap: 14,
-  },
-  planCardSmall: {
-    flex: 1,
-  },
-  planCardLarge: {
-    flex: 1,
+  planSpacing: {
+    height: 12,
   },
   planCardSecondary: {
     opacity: 0.9,
