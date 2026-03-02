@@ -55,8 +55,10 @@ export default function PaywallScreen() {
     router.replace('/meditations');
   };
 
-  const cardWidth = width * 0.85;
-  const cardGap = 16;
+  const compactHorizontalInset = 16;
+  const compactAvailableWidth = width - compactHorizontalInset * 2;
+  const cardWidth = Math.round(compactAvailableWidth * 0.85);
+  const cardGap = 12;
   const snapInterval = cardWidth + cardGap;
 
   const handleMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -78,20 +80,20 @@ export default function PaywallScreen() {
             <View>
               <View style={styles.header}>
                 <Text style={styles.badge}>Premium</Text>
-                <Text style={styles.title}>Unlock Your Inner Calm</Text>
+                <Text style={styles.titleCompact}>Unlock Your Inner Calm</Text>
                 <Text style={styles.subtitle}>
                   Drift into a quieter mind with curated meditations designed for rest, focus, and daily balance.
                 </Text>
               </View>
 
-              <View style={styles.benefitsCard}>
-                <Text style={styles.sectionLabel}>What you’ll get</Text>
+              <View style={[styles.benefitsCard, styles.benefitsCardCompact]}>
+                <Text style={[styles.sectionLabel, styles.sectionLabelCompact]}>What you’ll get</Text>
                 {BENEFITS.map((item) => (
                   <View key={item} style={styles.benefitRow}>
-                    <View style={styles.check}>
-                      <Text style={styles.checkIcon}>✓</Text>
+                    <View style={[styles.check, styles.checkCompact]}>
+                      <Text style={[styles.checkIcon, styles.checkIconCompact]}>✓</Text>
                     </View>
-                    <Text style={styles.benefitText}>{item}</Text>
+                    <Text style={[styles.benefitText, styles.benefitTextCompact]}>{item}</Text>
                   </View>
                 ))}
               </View>
@@ -107,7 +109,10 @@ export default function PaywallScreen() {
                 decelerationRate="fast"
                 snapToAlignment="start"
                 onMomentumScrollEnd={handleMomentumEnd}
-                contentContainerStyle={{ paddingHorizontal: (width - cardWidth) / 2 }}
+                contentContainerStyle={{
+                  paddingLeft: 0,
+                  paddingRight: Math.max(0, compactAvailableWidth - cardWidth),
+                }}
                 renderItem={({ item, index }) => {
                   const isSelected = selectedPlan === item.id;
                   return (
@@ -142,7 +147,7 @@ export default function PaywallScreen() {
                 After the trial, your subscription renews automatically. Cancel anytime in your account settings.
               </Text>
               <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
-                <Text style={styles.skipLinkText}>Continue without subscription</Text>
+                <Text style={styles.skipLinkText}>Продолжить без подписки</Text>
               </Pressable>
             </View>
           </View>
@@ -207,7 +212,7 @@ export default function PaywallScreen() {
             </Text>
 
             <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
-              <Text style={styles.skipLinkText}>Continue without subscription</Text>
+              <Text style={styles.skipLinkText}>Продолжить без подписки</Text>
             </Pressable>
           </ScrollView>
         )}
@@ -262,6 +267,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
     color: '#F9F5FF',
   },
+  titleCompact: {
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+    color: '#F9F5FF',
+  },
   subtitle: {
     fontSize: 15,
     lineHeight: 22,
@@ -280,12 +292,21 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 18 },
     gap: 12,
   },
+  benefitsCardCompact: {
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    gap: 10,
+  },
   sectionLabel: {
     fontSize: 13,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
     color: '#9DA8FF',
     marginBottom: 4,
+  },
+  sectionLabelCompact: {
+    fontSize: 12,
+    marginBottom: 2,
   },
   benefitRow: {
     flexDirection: 'row',
@@ -300,16 +321,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  checkCompact: {
+    height: 20,
+    width: 20,
+    borderRadius: 12,
+  },
   checkIcon: {
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '600',
+  },
+  checkIconCompact: {
+    fontSize: 12,
   },
   benefitText: {
     flex: 1,
     color: '#E7EBFF',
     fontSize: 14,
     lineHeight: 20,
+  },
+  benefitTextCompact: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   plansWrapper: {
     marginTop: 8,
@@ -357,17 +390,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     color: '#CBD0FF',
-  },
-  planCardSecondary: {
-    opacity: 0.9,
-  },
-  planCardPrimary: {
-    backgroundColor: 'rgba(57, 51, 134, 0.98)',
-    borderColor: '#C4B5FD',
-    shadowColor: '#4C46B9',
-    shadowOpacity: 0.55,
-    shadowRadius: 26,
-    shadowOffset: { width: 0, height: 18 },
   },
   ribbon: {
     position: 'absolute',
