@@ -72,76 +72,144 @@ export default function PaywallScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.gradient}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={[styles.content, isCompact && styles.contentCompact]}>
-          <View style={styles.header}>
-            <Text style={styles.badge}>Premium</Text>
-            <Text style={styles.title}>Unlock Your Inner Calm</Text>
-            <Text style={styles.subtitle}>
-              Drift into a quieter mind with curated meditations designed for rest, focus, and daily balance.
-            </Text>
-          </View>
-
-          <View style={styles.benefitsCard}>
-            <Text style={styles.sectionLabel}>What you’ll get</Text>
-            {BENEFITS.map((item) => (
-              <View key={item} style={styles.benefitRow}>
-                <View style={styles.check}>
-                  <Text style={styles.checkIcon}>✓</Text>
-                </View>
-                <Text style={styles.benefitText}>{item}</Text>
+        {isCompact ? (
+          <View style={styles.compactRoot}>
+            <View>
+              <View style={styles.header}>
+                <Text style={styles.badge}>Premium</Text>
+                <Text style={styles.title}>Unlock Your Inner Calm</Text>
+                <Text style={styles.subtitle}>
+                  Drift into a quieter mind with curated meditations designed for rest, focus, and daily balance.
+                </Text>
               </View>
-            ))}
+
+              <View style={styles.benefitsCard}>
+                <Text style={styles.sectionLabel}>What you’ll get</Text>
+                {BENEFITS.map((item) => (
+                  <View key={item} style={styles.benefitRow}>
+                    <View style={styles.check}>
+                      <Text style={styles.checkIcon}>✓</Text>
+                    </View>
+                    <Text style={styles.benefitText}>{item}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.plansWrapper}>
+              <FlatList
+                data={PLANS}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={snapInterval}
+                decelerationRate="fast"
+                snapToAlignment="start"
+                onMomentumScrollEnd={handleMomentumEnd}
+                contentContainerStyle={{ paddingHorizontal: (width - cardWidth) / 2 }}
+                renderItem={({ item, index }) => {
+                  const isSelected = selectedPlan === item.id;
+                  return (
+                    <Pressable
+                      onPress={() => setSelectedPlan(item.id)}
+                      style={[
+                        styles.planCard,
+                        item.highlight ? styles.planCardPrimary : styles.planCardSecondary,
+                        isSelected && styles.planCardSelected,
+                        {
+                          width: cardWidth,
+                          marginRight: index === PLANS.length - 1 ? 0 : cardGap,
+                        },
+                      ]}>
+                      {item.highlight && item.badge && (
+                        <View style={styles.ribbon}>
+                          <Text style={styles.ribbonText}>{item.badge}</Text>
+                        </View>
+                      )}
+                      <Text style={styles.planLabel}>{item.label}</Text>
+                      <Text style={styles.planPrice}>{item.price}</Text>
+                      <Text style={styles.planCaption}>{item.caption}</Text>
+                    </Pressable>
+                  );
+                }}
+              />
+            </View>
+
+            <View style={styles.compactFooter}>
+              <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
+              <Text style={styles.legal}>
+                After the trial, your subscription renews automatically. Cancel anytime in your account settings.
+              </Text>
+              <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
+                <Text style={styles.skipLinkText}>Continue without subscription</Text>
+              </Pressable>
+            </View>
           </View>
+        ) : (
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}>
+            <View style={styles.header}>
+              <Text style={styles.badge}>Premium</Text>
+              <Text style={styles.title}>Unlock Your Inner Calm</Text>
+              <Text style={styles.subtitle}>
+                Drift into a quieter mind with curated meditations designed for rest, focus, and daily balance.
+              </Text>
+            </View>
 
-          <View style={styles.plansWrapper}>
-            <FlatList
-              data={PLANS}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={snapInterval}
-              decelerationRate="fast"
-              snapToAlignment="start"
-              onMomentumScrollEnd={handleMomentumEnd}
-              contentContainerStyle={{ paddingHorizontal: (width - cardWidth) / 2 }}
-              renderItem={({ item, index }) => {
-                const isSelected = selectedPlan === item.id;
-                return (
-                  <Pressable
-                    onPress={() => setSelectedPlan(item.id)}
-                    style={[
-                      styles.planCard,
-                      item.highlight ? styles.planCardPrimary : styles.planCardSecondary,
-                      isSelected && styles.planCardSelected,
-                      {
-                        width: cardWidth,
-                        marginRight: index === PLANS.length - 1 ? 0 : cardGap,
-                      },
-                    ]}>
-                    {item.highlight && item.badge && (
-                      <View style={styles.ribbon}>
-                        <Text style={styles.ribbonText}>{item.badge}</Text>
-                      </View>
-                    )}
-                    <Text style={styles.planLabel}>{item.label}</Text>
-                    <Text style={styles.planPrice}>{item.price}</Text>
-                    <Text style={styles.planCaption}>{item.caption}</Text>
-                  </Pressable>
-                );
-              }}
-            />
-          </View>
+            <View style={styles.benefitsCard}>
+              <Text style={styles.sectionLabel}>What you’ll get</Text>
+              {BENEFITS.map((item) => (
+                <View key={item} style={styles.benefitRow}>
+                  <View style={styles.check}>
+                    <Text style={styles.checkIcon}>✓</Text>
+                  </View>
+                  <Text style={styles.benefitText}>{item}</Text>
+                </View>
+              ))}
+            </View>
 
-          <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
+            <View style={styles.plansWrapper}>
+              <Pressable
+                onPress={() => setSelectedPlan('monthly')}
+                style={[
+                  styles.planCard,
+                  styles.planCardSecondary,
+                  selectedPlan === 'monthly' && styles.planCardSelected,
+                ]}>
+                <Text style={styles.planLabel}>Monthly</Text>
+                <Text style={styles.planPrice}>$9.99</Text>
+                <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
+              </Pressable>
 
-          <Text style={styles.legal}>
-            After the trial, your subscription renews automatically. Cancel anytime in your account settings.
-          </Text>
+              <Pressable
+                onPress={() => setSelectedPlan('yearly')}
+                style={[
+                  styles.planCard,
+                  styles.planCardPrimary,
+                  selectedPlan === 'yearly' && styles.planCardSelected,
+                ]}>
+                <View style={styles.ribbon}>
+                  <Text style={styles.ribbonText}>Best Value</Text>
+                </View>
+                <Text style={styles.planLabel}>Yearly</Text>
+                <Text style={styles.planPrice}>$59.99</Text>
+                <Text style={styles.planCaption}>Best for committed calm. Save more than 50%.</Text>
+              </Pressable>
+            </View>
 
-          <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
-            <Text style={styles.skipLinkText}>Continue without subscription</Text>
-          </Pressable>
-        </View>
+            <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
+
+            <Text style={styles.legal}>
+              After the trial, your subscription renews automatically. Cancel anytime in your account settings.
+            </Text>
+
+            <Pressable onPress={() => router.push('/meditations')} style={styles.skipLink}>
+              <Text style={styles.skipLinkText}>Continue without subscription</Text>
+            </Pressable>
+          </ScrollView>
+        )}
       </SafeAreaView>
     </LinearGradient>
   );
@@ -154,19 +222,22 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  content: {
+  scroll: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: 22,
     paddingTop: 18,
-    paddingBottom: 24,
-    gap: 18,
-    justifyContent: 'space-between',
+    paddingBottom: 32,
+    gap: 22,
   },
-  contentCompact: {
+  compactRoot: {
+    flex: 1,
     paddingHorizontal: 16,
     paddingTop: 12,
-    paddingBottom: 18,
-    gap: 14,
+    paddingBottom: 12,
+    gap: 12,
+    justifyContent: 'space-between',
   },
   header: {
     gap: 8,
