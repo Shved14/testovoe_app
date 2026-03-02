@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -13,6 +13,11 @@ const BENEFITS = [
 export default function PaywallScreen() {
   const { width } = useWindowDimensions();
   const isCompact = width < 360;
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+
+  const handleStartTrial = () => {
+    // TODO: subscribe() + navigation to MeditationsScreen
+  };
 
   return (
     <LinearGradient
@@ -45,19 +50,28 @@ export default function PaywallScreen() {
           </View>
 
           <View style={[styles.plansWrapper, !isCompact && styles.plansWrapperRow]}>
-            <View style={[styles.planCard, styles.planCardSecondary, !isCompact && styles.planCardSmall]}>
+            <Pressable
+              onPress={() => setSelectedPlan('monthly')}
+              style={[
+                styles.planCard,
+                styles.planCardSecondary,
+                !isCompact && styles.planCardSmall,
+                selectedPlan === 'monthly' && styles.planCardSelected,
+              ]}>
               <Text style={styles.planLabel}>Monthly</Text>
               <Text style={styles.planPrice}>
                 $7<Text style={styles.planPriceSmall}>.99</Text>
               </Text>
               <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
-            </View>
+            </Pressable>
 
-            <View
+            <Pressable
+              onPress={() => setSelectedPlan('yearly')}
               style={[
                 styles.planCard,
                 styles.planCardPrimary,
                 !isCompact && styles.planCardLarge,
+                selectedPlan === 'yearly' && styles.planCardSelected,
               ]}>
               <View style={styles.ribbon}>
                 <Text style={styles.ribbonText}>Best value</Text>
@@ -67,12 +81,12 @@ export default function PaywallScreen() {
                 $39<Text style={styles.planPriceSmall}>.99</Text>
               </Text>
               <Text style={styles.planCaption}>Save over 55% vs monthly.</Text>
-            </View>
+            </Pressable>
           </View>
 
-          <TouchableOpacity activeOpacity={0.9} style={styles.ctaButton}>
+          <Pressable onPress={handleStartTrial} style={({ pressed }) => [styles.ctaButton, pressed && styles.ctaButtonPressed]}>
             <Text style={styles.ctaText}>Start Free Trial</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           <Text style={styles.legal}>
             After the trial, your subscription renews automatically. Cancel anytime in your account settings.
@@ -95,6 +109,7 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 32,
     gap: 22,
+    flexGrow: 1,
   },
   scrollContentCompact: {
     paddingHorizontal: 18,
