@@ -1,6 +1,7 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BENEFITS = [
   'Unlimited access to all meditations',
@@ -10,15 +11,18 @@ const BENEFITS = [
 ];
 
 export default function PaywallScreen() {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 360;
+
   return (
     <LinearGradient
-      colors={['#1B2140', '#111627', '#050713']}
+      colors={['#1C1238', '#151B3A', '#050816']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.gradient}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]}
           showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Text style={styles.badge}>Premium</Text>
@@ -29,7 +33,7 @@ export default function PaywallScreen() {
           </View>
 
           <View style={styles.benefitsCard}>
-            <Text style={styles.sectionLabel}>Why upgrade</Text>
+            <Text style={styles.sectionLabel}>What you’ll get</Text>
             {BENEFITS.map((item) => (
               <View key={item} style={styles.benefitRow}>
                 <View style={styles.check}>
@@ -40,8 +44,8 @@ export default function PaywallScreen() {
             ))}
           </View>
 
-          <View style={styles.plansWrapper}>
-            <View style={[styles.planCard, styles.planCardSecondary]}>
+          <View style={[styles.plansWrapper, !isCompact && styles.plansWrapperRow]}>
+            <View style={[styles.planCard, styles.planCardSecondary, !isCompact && styles.planCardSmall]}>
               <Text style={styles.planLabel}>Monthly</Text>
               <Text style={styles.planPrice}>
                 $7<Text style={styles.planPriceSmall}>.99</Text>
@@ -49,7 +53,12 @@ export default function PaywallScreen() {
               <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
             </View>
 
-            <View style={[styles.planCard, styles.planCardPrimary]}>
+            <View
+              style={[
+                styles.planCard,
+                styles.planCardPrimary,
+                !isCompact && styles.planCardLarge,
+              ]}>
               <View style={styles.ribbon}>
                 <Text style={styles.ribbonText}>Best value</Text>
               </View>
@@ -82,53 +91,62 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 32,
+    gap: 22,
+  },
+  scrollContentCompact: {
+    paddingHorizontal: 18,
     paddingTop: 12,
-    paddingBottom: 28,
+    paddingBottom: 24,
   },
   header: {
-    gap: 10,
-    marginBottom: 24,
+    gap: 8,
+    marginBottom: 4,
   },
   badge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(155, 135, 245, 0.2)',
-    color: '#D3C7FF',
-    fontSize: 12,
-    letterSpacing: 0.5,
+    backgroundColor: 'rgba(167, 139, 250, 0.25)',
+    color: '#E5D9FF',
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   title: {
-    fontSize: 30,
-    lineHeight: 36,
+    fontSize: 32,
+    lineHeight: 38,
     fontWeight: '700',
-    color: '#F5F4FF',
+    letterSpacing: 0.2,
+    color: '#F9F5FF',
   },
   subtitle: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#A9B0D9',
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#C3C8F5',
   },
   benefitsCard: {
-    borderRadius: 24,
-    padding: 18,
-    backgroundColor: 'rgba(16, 24, 48, 0.9)',
+    borderRadius: 26,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    backgroundColor: 'rgba(18, 26, 60, 0.94)',
     borderWidth: 1,
-    borderColor: 'rgba(120, 140, 255, 0.3)',
+    borderColor: 'rgba(138, 180, 255, 0.45)',
     shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 14 },
-    marginBottom: 24,
-    gap: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 18 },
+    gap: 12,
   },
   sectionLabel: {
-    fontSize: 12,
-    letterSpacing: 1,
+    fontSize: 13,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
-    color: '#7E8ACD',
+    color: '#9DA8FF',
+    marginBottom: 4,
   },
   benefitRow: {
     flexDirection: 'row',
@@ -136,10 +154,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   check: {
-    height: 22,
-    width: 22,
-    borderRadius: 12,
-    backgroundColor: '#7B6DFF',
+    height: 24,
+    width: 24,
+    borderRadius: 14,
+    backgroundColor: '#7C6CFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -150,35 +168,53 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     flex: 1,
-    color: '#E4E7FF',
+    color: '#E7EBFF',
     fontSize: 14,
+    lineHeight: 20,
   },
   plansWrapper: {
     flexDirection: 'column',
     gap: 14,
-    marginBottom: 20,
+    marginTop: 8,
+    marginBottom: 18,
+  },
+  plansWrapperRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
   planCard: {
-    borderRadius: 22,
-    paddingVertical: 16,
+    borderRadius: 24,
+    paddingVertical: 18,
     paddingHorizontal: 18,
-    backgroundColor: 'rgba(10, 16, 36, 0.95)',
+    backgroundColor: 'rgba(9, 14, 34, 0.97)',
     borderWidth: 1,
-    borderColor: 'rgba(122, 135, 255, 0.4)',
+    borderColor: 'rgba(129, 140, 248, 0.6)',
+    overflow: 'hidden',
+  },
+  planCardSmall: {
+    flex: 0.94,
+  },
+  planCardLarge: {
+    flex: 1.08,
+    transform: [{ translateY: -2 }],
   },
   planCardSecondary: {
     opacity: 0.9,
   },
   planCardPrimary: {
-    backgroundColor: '#252B5A',
-    borderColor: '#B39CFF',
+    backgroundColor: 'rgba(57, 51, 134, 0.98)',
+    borderColor: '#C4B5FD',
+    shadowColor: '#4C46B9',
+    shadowOpacity: 0.55,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 18 },
   },
   ribbon: {
     position: 'absolute',
-    top: 10,
-    right: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    top: 12,
+    right: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 999,
     backgroundColor: '#F8C365',
   },
@@ -188,14 +224,14 @@ const styles = StyleSheet.create({
     color: '#2B1E05',
   },
   planLabel: {
-    fontSize: 13,
-    letterSpacing: 0.8,
+    fontSize: 12,
+    letterSpacing: 1,
     textTransform: 'uppercase',
-    color: '#AEB6F5',
+    color: '#C3C8FF',
     marginBottom: 6,
   },
   planPrice: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '700',
     color: '#FFFFFF',
   },
@@ -204,13 +240,13 @@ const styles = StyleSheet.create({
   },
   planCaption: {
     marginTop: 4,
-    fontSize: 13,
-    color: '#C0C6F8',
+    fontSize: 12,
+    color: '#CBD0FF',
   },
   ctaButton: {
-    marginTop: 4,
+    marginTop: 6,
     borderRadius: 999,
-    paddingVertical: 14,
+    paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F4C77A',
