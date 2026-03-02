@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSubscription } from '@/context/SubscriptionContext';
+import { PlanCard } from '@/components/PlanCard';
+import { PrimaryButton } from '@/components/PrimaryButton';
 
 const BENEFITS = [
   'Unlimited access to all meditations',
@@ -32,11 +34,12 @@ export default function PaywallScreen() {
       style={styles.gradient}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
+          style={styles.scroll}
           contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]}
           showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Text style={styles.badge}>Premium</Text>
-            <Text style={styles.title}>Unlock Deep Calm</Text>
+            <Text style={styles.title}>Unlock Your Inner Calm</Text>
             <Text style={styles.subtitle}>
               Drift into a quieter mind with curated meditations designed for rest, focus, and daily balance.
             </Text>
@@ -55,43 +58,31 @@ export default function PaywallScreen() {
           </View>
 
           <View style={[styles.plansWrapper, !isCompact && styles.plansWrapperRow]}>
-            <Pressable
-              onPress={() => setSelectedPlan('monthly')}
-              style={[
-                styles.planCard,
-                styles.planCardSecondary,
-                !isCompact && styles.planCardSmall,
-                selectedPlan === 'monthly' && styles.planCardSelected,
-              ]}>
-              <Text style={styles.planLabel}>Monthly</Text>
-              <Text style={styles.planPrice}>
-                $7<Text style={styles.planPriceSmall}>.99</Text>
-              </Text>
-              <Text style={styles.planCaption}>Billed monthly, cancel anytime.</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setSelectedPlan('yearly')}
-              style={[
-                styles.planCard,
-                styles.planCardPrimary,
-                !isCompact && styles.planCardLarge,
-                selectedPlan === 'yearly' && styles.planCardSelected,
-              ]}>
-              <View style={styles.ribbon}>
-                <Text style={styles.ribbonText}>Best value</Text>
+            <View style={!isCompact && styles.planRow}>
+              <View style={!isCompact && styles.planCardSmall}>
+                <PlanCard
+                  label="Monthly"
+                  price="$9.99"
+                  caption="Billed monthly, cancel anytime."
+                  selected={selectedPlan === 'monthly'}
+                  onPress={() => setSelectedPlan('monthly')}
+                />
               </View>
-              <Text style={styles.planLabel}>Yearly</Text>
-              <Text style={styles.planPrice}>
-                $39<Text style={styles.planPriceSmall}>.99</Text>
-              </Text>
-              <Text style={styles.planCaption}>Save over 55% vs monthly.</Text>
-            </Pressable>
+              <View style={!isCompact && styles.planCardLarge}>
+                <PlanCard
+                  label="Yearly"
+                  price="$59.99"
+                  caption="Best for committed calm. Save more than 50%."
+                  highlight
+                  badgeText="Best Value"
+                  selected={selectedPlan === 'yearly'}
+                  onPress={() => setSelectedPlan('yearly')}
+                />
+              </View>
+            </View>
           </View>
 
-          <Pressable onPress={handleStartTrial} style={({ pressed }) => [styles.ctaButton, pressed && styles.ctaButtonPressed]}>
-            <Text style={styles.ctaText}>Start Free Trial</Text>
-          </Pressable>
+          <PrimaryButton label="Start Free Trial" onPress={handleStartTrial} />
 
           <Text style={styles.legal}>
             After the trial, your subscription renews automatically. Cancel anytime in your account settings.
@@ -109,12 +100,14 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  scroll: {
+    flex: 1,
+  },
   scrollContent: {
     paddingHorizontal: 22,
     paddingTop: 18,
     paddingBottom: 32,
     gap: 22,
-    flexGrow: 1,
   },
   scrollContentCompact: {
     paddingHorizontal: 18,
@@ -202,14 +195,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'stretch',
   },
-  planCard: {
-    borderRadius: 24,
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    backgroundColor: 'rgba(9, 14, 34, 0.97)',
-    borderWidth: 1,
-    borderColor: 'rgba(129, 140, 248, 0.6)',
-    overflow: 'hidden',
+  planRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 14,
   },
   planCardSmall: {
     flex: 0.94,
@@ -242,44 +231,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: '#2B1E05',
-  },
-  planLabel: {
-    fontSize: 12,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: '#C3C8FF',
-    marginBottom: 6,
-  },
-  planPrice: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  planPriceSmall: {
-    fontSize: 18,
-  },
-  planCaption: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#CBD0FF',
-  },
-  ctaButton: {
-    marginTop: 6,
-    borderRadius: 999,
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F4C77A',
-    shadowColor: '#F4C77A',
-    shadowOpacity: 0.45,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 12 },
-  },
-  ctaText: {
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    color: '#2A1C05',
   },
   legal: {
     marginTop: 14,
