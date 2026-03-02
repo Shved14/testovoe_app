@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 const BENEFITS = [
   'Unlimited access to all meditations',
@@ -14,9 +16,12 @@ export default function PaywallScreen() {
   const { width } = useWindowDimensions();
   const isCompact = width < 360;
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+  const router = useRouter();
+  const { subscribe } = useSubscription();
 
   const handleStartTrial = () => {
-    // TODO: subscribe() + navigation to MeditationsScreen
+    subscribe();
+    router.replace('/meditations');
   };
 
   return (
