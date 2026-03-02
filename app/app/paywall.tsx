@@ -197,15 +197,14 @@ const styles = StyleSheet.create({
   },
   planRow: {
     flexDirection: 'row',
-    alignItems: 'stretch',
-    gap: 14,
+    alignItems: 'flex-start',
+    columnGap: 14,
   },
   planCardSmall: {
-    flex: 0.94,
+    flex: 1,
   },
   planCardLarge: {
-    flex: 1.08,
-    transform: [{ translateY: -2 }],
+    flex: 1,
   },
   planCardSecondary: {
     opacity: 0.9,
